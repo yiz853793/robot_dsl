@@ -1,5 +1,6 @@
 # lexer.py
 import ply.lex as lex
+import sys
 
 class Lexer:
     reserved = {
@@ -118,11 +119,15 @@ class Lexer:
 
 # Example usage
 if __name__ == '__main__':
-    with open('scripts\\a.dsl', 'r', encoding='utf-8') as f:
-        data = f.read()
-    # print(data)
     tokenizer = Lexer()
-    tokens = tokenizer.tokenize(data)
     
-    for tok in tokens:
-        print(tok)
+    if len(sys.argv) < 2:
+        raise Exception("需要输入您的代码文件")
+    elif len(sys.argv) > 2:
+        raise Exception("您输入的文件太多了")
+    else :
+        with open(sys.argv[1], 'r', encoding='utf-8') as file:
+            code = file.read()
+        tokens = tokenizer.tokenize(code)
+        for tok in tokens:
+            print(tok)

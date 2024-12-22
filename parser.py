@@ -2,6 +2,7 @@
 import ply.yacc as yacc
 import lexer
 import AST
+import sys
 
 class ParserError(Exception):
     def __init__(self, message, token=None):
@@ -18,7 +19,7 @@ class Parser:
     def __init__(self, Lexer: lexer.Lexer):
         self._lexer = Lexer
         self.tokens = Lexer.tokens
-        self._yacc = yacc.yacc(module=self, debug=True)
+        self._yacc = yacc.yacc(module=self, debug=True, method='LALR')
 
     def _p_ASTNode(self, node):
         """用p构造ASTNode"""
@@ -180,9 +181,11 @@ class Parser:
             p[0] = p[1]
 
     def p_term(self, p):
-        """term : term TIMES factor
+        """
+            term : term TIMES factor
                 | term DIVIDE factor
-                | factor"""
+                | factor
+        """
         if len(p) == 4:
             p[0] = AST.ASTNode(type='term', operation=p[2], 
                                children=self._create_children(p[1], p[3]))
@@ -203,7 +206,7 @@ class Parser:
                   | TRUE
                   | FALSE
                   | function_call
-                  """
+        """
         if len(p) == 2:
             p[0] = p[1]
         elif len(p) == 3 : # factor -> -factor
@@ -223,7 +226,7 @@ class Parser:
 
     def p_array(self, p) :
         '''
-            array : LPAREN argument_lists RPAREN
+            array : LBRACKET argument_lists RBRACKET
         '''
         p[0] = AST.ASTNode(type='array', children=self._create_children(p[2]))
     
@@ -237,7 +240,7 @@ class Parser:
             p[0] = p[1]
         else:
             # 空的参数列表
-            p[0] = AST.ASTNode('argument_lists')
+            p[0] = AST.ASTNode('argument_list')
 
     def p_argument_list(self, p):
         """
@@ -270,8 +273,12 @@ class Parser:
 if __name__ == '__main__':
     parser = Parser(lexer.Lexer())
     
-    with open('scripts\\a.dsl', 'r', encoding='utf-8') as f:
-        code = f.read()
-
-    result = parser.parse(code)
-    result.print()
+    if len(sys.argv) < 2:
+        raise Exception("需要输入您的代码文件")
+    elif len(sys.argv) > 2:
+        raise Exception("您输入的文件太多了")
+    else :
+        with open(sys.argv[1], 'r', encoding='utf-8') as file:
+            code = file.read()
+        result = parser.parse(code)
+        result.print()

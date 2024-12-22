@@ -14,7 +14,7 @@ class Interpreter:
         self._execute_node(self.root_node)
     
     def _get_ASTNode_value(self, node : AST.ASTNode):
-        if node.type == 'STR' or node.type == 'NUMBER' or node.type == 'True' or node.type == 'False':
+        if node.type == 'STR' or node.type == 'NUMBER' or node.type == 'TRUE' or node.type == 'FALSE':
             return node.value
         
         # 获取变量的值
@@ -257,21 +257,22 @@ class Interpreter:
     def _execute_python_call(self, node: AST.ASTNode):
         "调用外部python脚本"
         script_path = node.operation  
-        arguments = [self._get_ASTNode_value(arg) for arg in node.children]
+        arguments = self._get_ASTNode_value(node.children[0])
         
         if not os.path.isabs(script_path):  # If the path is relative, make it absolute
             script_path = os.path.join(os.getcwd(), script_path)
-        
+
         # Make sure the file exists
         if not os.path.isfile(script_path):
             raise Exception(f"Python 脚本 {script_path} 不存在")
         
         args = [str(arg) for arg in arguments]
-        
         try:
             result = subprocess.run([sys.executable, script_path] + args, 
                                     capture_output=True, text=True, check=True)
-            return result.stdout.strip() # 脚本输出结果
+            ans = result.stdout.strip()
+            print(ans)
+            return ans # 脚本输出结果
         except subprocess.CalledProcessError as e:
             raise Exception(f"调用 {script_path} 脚本执行失败，错误信息:\n {e.stderr.strip()}")     
 
@@ -321,6 +322,16 @@ class Interpreter:
             print(' '.join(args_str), end='')
             return input()
         
+        if function_name == 'len':
+            arguments = self._get_ASTNode_value(node.children[0])
+            ans = []
+            for arg in arguments:
+                if isinstance(arg, (list, str)):
+                    ans.append(len(arg))
+                else :
+                    ans.append(None)
+            return ans
+
         if function_name not in self.functions:
             raise Exception(f'{function_name} 未定义，无法调用')
         
@@ -341,7 +352,7 @@ class Interpreter:
         self.returned = False
 
         try:
-            return_value = self._execute_program(function_tuple['body'])
+            return_value = self._execute_node(function_tuple['body'])
         except Exception:
             raise Exception(f"函数 {function_name} 运行中出错")
         finally:

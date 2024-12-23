@@ -16,6 +16,84 @@ class ParserError(Exception):
         return f"Error: {self.message}"
 
 class Parser:
+    '''
+    <program> ::= <program> <statement>
+           | <empty>
+
+    <statement> ::= <assign>
+                | <if_state>
+                | <while_state>
+                | <python_call>
+                | <function_call>
+                | <function_def>
+                | <return_statement>
+
+    <python_call> ::= CALLPY '(' <argument_lists> ')'
+
+    <assign> ::= ID = <expression>
+            | <array_item> = <expression>
+
+    <if_state> ::= IF <condition> BEGIN <program> END
+                | IF <condition> BEGIN <program> ELSE <program> END
+
+    <function_def> ::= FUNCTION ID '(' <argument_lists> ')' BEGIN <program> END
+
+    <function_call> ::= ID '(' <argument_lists> ')'
+
+    <return_statement> ::= RETURN
+                    | RETURN <condition>
+
+    <condition> ::= <condition> OR <boolexpression>
+                | <boolexpression>
+
+    <boolexpression> ::= <boolexpression> AND <boolterm>
+                    | <boolterm>
+
+    <boolterm> ::= <boolfactor>
+            | <boolterm> '==' <boolfactor>
+            | <boolterm> '!=' <boolfactor>
+            | <boolterm> '<=' <boolfactor>
+            | <boolterm> '<' <boolfactor>
+            | <boolterm> '>=' <boolfactor>
+            | <boolterm> '>' <boolfactor>
+
+    <boolfactor> ::= NOT <boolfactor>
+                | <expression>
+
+    <expression> ::= <expression> '+' <term>
+                | <expression> '-' <term>
+                | <term>
+
+    <term> ::= <term> '*' <factor>
+            | <term> '/' <factor>
+            | <factor>
+
+    <factor> ::= '(' <condition> ')'
+            | - <factor>
+            | '(atoi)' <factor>
+            | '(itoa)' <factor>
+            | NUMBER
+            | STR
+            | ID
+            | <array_item>
+            | <array>
+            | <python_call>
+            | TRUE
+            | FALSE
+            | <function_call>
+
+    <array> ::= '[' <argument_lists> ']'
+
+    <array_item> ::= ID '[' <expression> ']'
+
+    <argument_lists> ::= <argument_list>
+                    | <empty>
+
+    <argument_list> ::= <expression>
+                    | <argument_list> COMMA <expression>
+
+    <empty> ::= 
+    '''
     def __init__(self, Lexer: lexer.Lexer):
         self._lexer = Lexer
         self.tokens = Lexer.tokens
@@ -267,9 +345,10 @@ class Parser:
             raise ParserError(error_msg)
         
     def parse(self, code : str):
+        '''对目标文件进行语法分析，返回AST数的根节点'''
         return self._yacc.parse(code, lexer=self._lexer.lexer)
         
-# Example usage
+# 示例用法
 if __name__ == '__main__':
     parser = Parser(lexer.Lexer())
     
@@ -280,5 +359,6 @@ if __name__ == '__main__':
     else :
         with open(sys.argv[1], 'r', encoding='utf-8') as file:
             code = file.read()
+    # code = input()
         result = parser.parse(code)
         result.print()

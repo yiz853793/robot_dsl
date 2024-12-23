@@ -9,7 +9,7 @@ function add(a, b)
 begin
     return a + b
 end
-a = '你好' b = '世界'
+a = '你好' b = '世界\\'
 
 function cmp(a, b) begin
     if a > b begin

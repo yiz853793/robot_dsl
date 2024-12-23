@@ -1,7 +1,5 @@
 # Function definition
 
-main()
-
 function main() begin
     # Variable assignments
     x = 10
@@ -43,6 +41,8 @@ function main() begin
     result = add(x, y) + b + d
     return result
 end
+
+main()
 
 # A simple add function definition
 function add(a, b) begin

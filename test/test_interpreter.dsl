@@ -62,9 +62,9 @@ greeting = concatStrings("Hello, ", "world!")
 # Final return from main
 a = len(greeting)
 
-print('输出了',a[0],'个字符')
+print('print ',a[0],' charactors\n')
 
-print('main函数输出', main())
+print('main\'s output is ', main(), '\n')
 
 return greeting
 

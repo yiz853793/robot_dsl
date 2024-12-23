@@ -25,29 +25,29 @@ function main(u, v) begin
     
     # Logical operators
     if (x and y) begin
-        return x;
+        return x
     end
     if (x or y) begin
-        return y;
+        return y
     end
     if (not x) begin
-        return 0;
+        return 0
     end
     
     # While loop
     while (x <= y) begin
-        x = x + 1;
+        x = x + 1
     end
     
     # Function call with arguments
-    int result = add(3, 4);
+    int result = add(3, 4)
     
     # Strings and function definition
-    string greeting = "Hello, world!";
-    string reply = "Hi!";
+    string greeting = "Hello, world!"
+    string reply = "Hi!"
     
     # Return statement
-    return x;
+    return x
 end
 
 # A function definition example

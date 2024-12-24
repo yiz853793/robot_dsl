@@ -1,4 +1,5 @@
-import interpreter
+# main.py
+import interpreter, parser, lexer
 import sys
 
 def main():
@@ -9,7 +10,9 @@ def main():
     else :
         with open(sys.argv[1], 'r', encoding='utf-8') as file:
             code = file.read()
-        Interpreter = interpreter.Interpreter(code)
+        Parser = parser.Parser(lexer.Lexer())
+        node = Parser.parse(code)
+        Interpreter = interpreter.Interpreter(node)
         Interpreter.run()
 
 if __name__ == '__main__':

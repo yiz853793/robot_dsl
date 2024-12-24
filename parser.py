@@ -218,7 +218,7 @@ class Parser:
                 p[0] = AST.ASTNode(type='boolexpression', operation=p[2],
                                    children=self._create_children(p[1], p[3]))
         else :
-            p[0] = p[1]
+            p[0] = self._p_ASTNode(p[1])
     
     def p_boolterm(self, p):
         """
@@ -359,6 +359,5 @@ if __name__ == '__main__':
     else :
         with open(sys.argv[1], 'r', encoding='utf-8') as file:
             code = file.read()
-    # code = input()
         result = parser.parse(code)
         result.print()

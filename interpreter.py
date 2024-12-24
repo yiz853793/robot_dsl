@@ -5,9 +5,9 @@ from contextlib import contextmanager, redirect_stdout
 
 class Interpreter:
     ''' 按照规则运行AST树 '''
-    def __init__(self, code):
+    def __init__(self, node : AST.ASTNode):
         self._parser = parser.Parser(lexer.Lexer())
-        self.root_node = self._parser.parse(code) # AST树根节点
+        self.root_node = node # AST树根节点
         self.variables = [{}]  # 存储变量及其值，模仿栈帧
         self.functions = {}  # 存储函数
         self.returned = False # 存储是否返回
@@ -455,9 +455,15 @@ class Interpreter:
     
 # 测试解释器
 if __name__ == "__main__":
-    with open('scripts\\a.dsl', 'r', encoding='utf-8') as f:
-        code = f.read()
+    if len(sys.argv) < 2:
+        raise Exception("需要输入您的代码文件")
+    elif len(sys.argv) > 2:
+        raise Exception("您输入的文件太多了")
+    else :
+        with open(sys.argv[1], 'r', encoding='utf-8') as file:
+            code = file.read()
 
-    interpreter = Interpreter(code)
-    interpreter.run()
+        node = AST.reconstruct_ast_from_file(code)
+        interpreter = Interpreter(node)
+        interpreter.run()
 
